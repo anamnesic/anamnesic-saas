@@ -28,7 +28,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex">
       <aside className="w-60 border-r border-[var(--color-border)] p-4 flex flex-col gap-1">
-        <span className="font-semibold px-2 py-3">◆ Nous</span>
+        <span className="font-semibold px-2 py-3">◆ Anamnesic</span>
         {nav.map((n) => (
           <Link
             key={n.href}

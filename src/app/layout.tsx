@@ -4,7 +4,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { WorkspaceProvider } from "@/context/WorkspaceContext";
 
 export const metadata: Metadata = {
-  title: "Nous",
+  title: "Anamnesic",
   description: "Context & memory that follows you across every AI tool.",
 };
 

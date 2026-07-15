@@ -34,7 +34,7 @@ export default function Settings() {
       <section className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 max-w-xl mb-6">
         <h2 className="font-medium mb-1">API Keys</h2>
         <p className="text-sm text-[var(--color-muted)] mb-4">
-          Use para autenticar o CLI <code>nous</code> e o MCP server do nous-context.
+          Use para autenticar o CLI <code>anamnesic</code> e o MCP server do anamnesic-context.
         </p>
         <div className="flex gap-2 mb-4">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="nome (ex: local-cli)"
@@ -49,7 +49,7 @@ export default function Settings() {
         <ul className="text-sm space-y-1">
           {keys.map((k) => (
             <li key={k.id} className="flex justify-between text-[var(--color-muted)]">
-              <span>{k.name} · nous_{k.prefix}…</span>
+              <span>{k.name} · anamnesic_{k.prefix}…</span>
               <span>{k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString() : "—"}</span>
             </li>
           ))}

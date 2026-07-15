@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { rotateRefreshToken, signAccessToken, revokeRefreshToken } from "@/lib/auth";
 import { ok, err } from "@/app/api/_lib/response";
 
-const REFRESH_COOKIE = "nous_refresh";
+const REFRESH_COOKIE = "anamnesic_refresh";
 
 // Logout: revoke the refresh cookie and clear it.
 export async function DELETE(req: NextRequest) {

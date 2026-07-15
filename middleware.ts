@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Auth gate for the authenticated app shell — kairos had NO middleware.
-// Presence of the httpOnly `nous_refresh` cookie means a session exists.
+// Presence of the httpOnly `anamnesic_refresh` cookie means a session exists.
 // Hard authz still happens in the API handlers (verifyAccessToken); this is
 // just early redirect for the page layer.
 
-const REFRESH_COOKIE = "nous_refresh";
+const REFRESH_COOKIE = "anamnesic_refresh";
 
 export function middleware(req: NextRequest) {
   const hasSession = Boolean(req.cookies.get(REFRESH_COOKIE)?.value);

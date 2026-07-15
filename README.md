@@ -1,13 +1,13 @@
-# Nous App — SaaS shell (multi-tenant + billing)
+# Anamnesic App — SaaS shell (multi-tenant + billing)
 
-Aplicação web do **Nous**. É o **shell multi-tenant + módulo de cobrança** que faltava
+Aplicação web do **Anamnesic**. É o **shell multi-tenant + módulo de cobrança** que faltava
 para o produto virar SaaS. Construído reaproveitando (e corrigindo) dois repos seus:
 
 | Camada | Veio de | Correções aplicadas |
 |---|---|---|
 | Shell Next.js + auth + workspaces | `kairos/packages/app` | ver §"Correções" |
 | Billing por assinatura | `pagbank-finance-backend` | ver §"Correções" |
-| Produto (contexto/memory/MCP) | `nous-context` (thinkbrew) | conecta via API key |
+| Produto (contexto/memory/MCP) | `anamnesic-context` (thinkbrew) | conecta via API key |
 
 ---
 
@@ -22,7 +22,7 @@ para o produto virar SaaS. Construído reaproveitando (e corrigindo) dois repos 
 ## Estrutura
 
 ```
-nous-app/
+anamnesic-app/
 ├── prisma/
 │   ├── schema.prisma     # User, Workspace, Member(RBAC), Plan, Subscription, Invoice, ApiKey, AuditEvent, RefreshToken
 │   └── seed.ts           # planos free/pro/team
@@ -77,28 +77,28 @@ pnpm dev                          # http://localhost:3000
 > Para PagBank sandbox: crie os planos via `pagbank.createPlan()` e cole o id em
 > `Plan.pagbankPlanId` (Pro/Team). Free não precisa.
 
-## Wiring com o produto (`nous-context`)
+## Wiring com o produto (`anamnesic-context`)
 
-O Nous App **não contém** o motor de contexto — ele é o **caixa + multi-tenant**.
+O Anamnesic App **não contém** o motor de contexto — ele é o **caixa + multi-tenant**.
 O produto (thinkbrew core: Context/Decision/Export/MCP/CLI) roda separado e se conecta assim:
 
 ```
-[CLI/MCP nous-context] --API key--> [Nous App /api/v1/settings/api-keys valida]
-                                   [Nous App concede cota por plano (Plan.features)]
-                                   [nous-context lê NOUS_CONTEXT_API_URL p/ sync em nuvem]
+[CLI/MCP anamnesic-context] --API key--> [Anamnesic App /api/v1/settings/api-keys valida]
+                                   [Anamnesic App concede cota por plano (Plan.features)]
+                                   [anamnesic-context lê ANAMNESIC_CONTEXT_API_URL p/ sync em nuvem]
 ```
 
 Fluxo de signup → uso:
 1. Usuário cria conta (`/signup`) → ganha workspace + plano Free.
 2. Upgrade em `/billing` → `POST /api/v1/billing/subscribe` → PagBank cria assinatura.
 3. Webhook `subscription.active` / `order.paid` → atualiza `Subscription.status`.
-4. Em `/settings` gera uma **API key** → usa no `nous` CLI / MCP.
-5. `nous-context` valida a key e respeita `Plan.features.contextEntries` (cota).
+4. Em `/settings` gera uma **API key** → usa no `anamnesic` CLI / MCP.
+5. `anamnesic-context` valida a key e respeita `Plan.features.contextEntries` (cota).
 
 ## Próximos passos (o que ainda falta)
 
-- [ ] Endpoint `/api/v1/auth/api-key` que o nous-context chama para **validar key + ler cota**.
-- [ ] **Usage metering**: contar `contextEntries` por workspace (contador incrementa no nous-context, decremento de cota verificado aqui).
+- [ ] Endpoint `/api/v1/auth/api-key` que o anamnesic-context chama para **validar key + ler cota**.
+- [ ] **Usage metering**: contar `contextEntries` por workspace (contador incrementa no anamnesic-context, decremento de cota verificado aqui).
 - [ ] Stripe (se for mercado global) — hoje só PagBank.
 - [ ] Email transacional (resend/nodemailer) p/ receipts e onboarding.
 - [ ] CI/CD + deploy (Docker) — reaproveite workflows do kairos.

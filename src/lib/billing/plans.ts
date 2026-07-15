@@ -4,7 +4,7 @@
 
 export interface PlanFeature {
   seats: number;
-  contextEntries: number;   // quota for nous-context
+  contextEntries: number;   // quota for anamnesic-context
   mcp: boolean;
   sync: boolean;            // cloud sync (Pro+)
 }

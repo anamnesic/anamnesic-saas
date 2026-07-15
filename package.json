@@ -1,9 +1,9 @@
 {
-  "name": "nous-app",
+  "name": "anamnesic-saas",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Nous SaaS — multi-tenant shell (auth + workspaces) + PagBank subscription billing",
+  "description": "Anamnesic SaaS — multi-tenant shell (auth + workspaces) + PagBank subscription billing",
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",

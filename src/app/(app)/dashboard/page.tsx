@@ -29,8 +29,8 @@ export default function Dashboard() {
         <h3 className="font-medium mb-2">Próximo: conectar o produto</h3>
         <p className="text-sm text-[var(--color-muted)]">
           Este app é o <strong>shell multi-tenant + billing</strong>. O produto (contexto/memory/MCP)
-          vem do <code>nous-context</code> (thinkbrew). Conecte via API key em Configurações e aponte
-          o MCP server para <code>NOUS_CONTEXT_API_URL</code>.
+          vem do <code>anamnesic-context</code> (thinkbrew). Conecte via API key em Configurações e aponte
+          o MCP server para <code>ANAMNESIC_CONTEXT_API_URL</code>.
         </p>
       </div>
     </div>

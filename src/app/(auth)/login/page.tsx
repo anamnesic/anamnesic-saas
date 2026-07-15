@@ -27,7 +27,7 @@ export default function LoginPage() {
     <main className="min-h-screen flex items-center justify-center px-6">
       <form onSubmit={submit} className="w-full max-w-sm bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-8">
         <h1 className="text-xl font-semibold mb-1">Entrar</h1>
-        <p className="text-sm text-[var(--color-muted)] mb-6">Bem-vindo de volta ao Nous.</p>
+        <p className="text-sm text-[var(--color-muted)] mb-6">Bem-vindo de volta ao Anamnesic.</p>
         {error && <p className="text-sm text-red-400 mb-4">{error}</p>}
         <label className="block text-sm mb-1">Email</label>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required

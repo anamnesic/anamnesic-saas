@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { verifyPassword, signAccessToken, issueRefreshToken } from "@/lib/auth";
 import { ok, err } from "@/app/api/_lib/response";
 
-const REFRESH_COOKIE = "nous_refresh";
+const REFRESH_COOKIE = "anamnesic_refresh";
 
 const schema = z.object({
   email: z.string().email(),

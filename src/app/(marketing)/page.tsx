@@ -4,7 +4,7 @@ export default function Landing() {
   return (
     <main className="min-h-screen">
       <header className="flex items-center justify-between px-8 py-5 border-b border-[var(--color-border)]">
-        <span className="font-semibold text-lg">◆ Nous</span>
+        <span className="font-semibold text-lg">◆ Anamnesic</span>
         <nav className="flex gap-6 text-sm text-[var(--color-muted)]">
           <Link href="/pricing">Preços</Link>
           <Link href="/login">Entrar</Link>

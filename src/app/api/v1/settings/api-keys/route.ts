@@ -25,8 +25,8 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return err("VALIDATION_ERROR", "Invalid name", 400);
 
-  // nous_<48 random base64url> — full key returned ONCE; only prefix + hash stored.
-  const raw = `nous_${crypto.randomBytes(32).toString("base64url")}`;
+  // anamnesic_<48 random base64url> — full key returned ONCE; only prefix + hash stored.
+  const raw = `anamnesic_${crypto.randomBytes(32).toString("base64url")}`;
   const prefix = raw.slice(0, 12);
   const hash = crypto.createHash("sha256").update(raw).digest("hex");
 

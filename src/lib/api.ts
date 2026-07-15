@@ -4,8 +4,8 @@
 // Auto-injects Authorization + X-Workspace-Id and transparently refreshes
 // the access token once on 401 using the httpOnly refresh cookie.
 
-const ACCESS_KEY = "nous_access";
-const WS_KEY = "nous_workspace";
+const ACCESS_KEY = "anamnesic_access";
+const WS_KEY = "anamnesic_workspace";
 
 export function getAccessToken(): string | null {
   return localStorage.getItem(ACCESS_KEY);
@@ -30,7 +30,7 @@ async function refreshToken(): Promise<string | null> {
     try {
       const res = await fetch("/api/v1/auth/refresh", {
         method: "POST",
-        credentials: "include", // sends the httpOnly nous_refresh cookie
+        credentials: "include", // sends the httpOnly anamnesic_refresh cookie
       });
       if (!res.ok) return null;
       const json = await res.json();
