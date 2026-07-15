@@ -102,3 +102,7 @@ Fluxo de signup → uso:
 - [ ] Stripe (se for mercado global) — hoje só PagBank.
 - [ ] Email transacional (resend/nodemailer) p/ receipts e onboarding.
 - [ ] CI/CD + deploy (Docker) — reaproveite workflows do kairos.
+
+## Licenca
+
+AGPL-3.0 (open-core). Veja [LICENSE](LICENSE).
