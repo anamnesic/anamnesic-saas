@@ -1,4 +1,4 @@
-// Prisma schema — Nous SaaS
+// Prisma schema — Anamnesic SaaS
 // Multi-tenant (Workspace) + RBAC + subscription billing + API keys (for MCP/CLI).
 // Generator/adapter: postgresql.
 
@@ -172,7 +172,7 @@ model Invoice {
   planId          String
   amountCents     Int
   status          InvoiceStatus @default(PENDING)
-  pagbankOrderId  String?                         // PagBank order/charge id
+  pagbankOrderId  String?       @unique          // PagBank order/charge id
   paidAt          DateTime?
   createdAt       DateTime      @default(now())
 
@@ -181,7 +181,7 @@ model Invoice {
 }
 
 // ────────────────────────────────────────────────────────────
-//  API keys — for the MCP server / CLI (nous-context)
+//  API keys — for the MCP server / CLI (anamnesic-context)
 // ────────────────────────────────────────────────────────────
 
 model ApiKey {
