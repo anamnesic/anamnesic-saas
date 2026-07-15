@@ -1,0 +1,41 @@
+{
+  "name": "nous-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Nous SaaS — multi-tenant shell (auth + workspaces) + PagBank subscription billing",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "next": "^16.2.4",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.4",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.2.4",
+    "@types/react-dom": "^19.2.4",
+    "postcss": "^8.5.10",
+    "prisma": "^6.19.3",
+    "tailwindcss": "^4.2.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.0"
+  }
+}

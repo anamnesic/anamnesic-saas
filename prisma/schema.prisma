@@ -1,0 +1,220 @@
+// Prisma schema — Nous SaaS
+// Multi-tenant (Workspace) + RBAC + subscription billing + API keys (for MCP/CLI).
+// Generator/adapter: postgresql.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ────────────────────────────────────────────────────────────
+//  Identity & tenancy
+// ────────────────────────────────────────────────────────────
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  passwordHash String
+  name         String
+  status       UserStatus  @default(ACTIVE)
+  lastLoginAt  DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  memberships    WorkspaceMember[]
+  refreshTokens  RefreshToken[]
+  ownedWorkspaces Workspace[] @relation("WorkspaceOwner")
+  apiKeys        ApiKey[]
+  auditEvents    AuditEvent[]  @relation("AuditActor")
+
+  @@index([email])
+}
+
+model Workspace {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  description String?
+  ownerId     String
+  owner       User         @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+  status      WorkspaceStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  members       WorkspaceMember[]
+  subscription  Subscription?
+  invoices      Invoice[]
+  apiKeys       ApiKey[]
+  auditEvents   AuditEvent[]
+
+  @@index([ownerId])
+}
+
+enum WorkspaceStatus {
+  ACTIVE
+  ARCHIVED
+  DELETED
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+model WorkspaceMember {
+  workspaceId String
+  userId      String
+  role        MemberRole @default(MEMBER)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([workspaceId, userId])
+  @@index([userId])
+}
+
+// ────────────────────────────────────────────────────────────
+//  Auth — refresh token rotation (fixes kairos' stateless-forever bug)
+// ────────────────────────────────────────────────────────────
+
+model RefreshToken {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique          // sha256 of the raw refresh token
+  expiresAt  DateTime
+  revokedAt  DateTime?                   // set on rotation / logout
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// ────────────────────────────────────────────────────────────
+//  Billing — plans, subscriptions, invoices
+// ────────────────────────────────────────────────────────────
+
+model Plan {
+  id               String   @id @default(cuid())
+  slug             String   @unique          // "free" | "pro" | "team"
+  name             String
+  description      String?
+  priceCents       Int                         // BRL in centavos (0 = free)
+  interval         PlanInterval @default(MONTHLY)
+  pagbankPlanId    String?                     // PagBank v4 plan id (null for free)
+  trialDays        Int      @default(0)
+  features         Json     @default("{}")    // { seats: 5, contextEntries: 10000, mcp: true }
+  active           Boolean  @default(true)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  subscriptions Subscription[]
+}
+
+enum PlanInterval {
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  EXPIRED
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  workspaceId          String             @unique          // one active sub per workspace
+  workspace            Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  planId               String
+  plan                 Plan               @relation(fields: [planId], references: [id])
+  status               SubscriptionStatus @default(TRIALING)
+  pagbankSubscriptionId String?                            // PagBank v4 subscription id
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  canceledAt           DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  invoices Invoice[]
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  CANCELED
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  workspaceId     String
+  workspace       Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  subscriptionId  String?
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+  planId          String
+  amountCents     Int
+  status          InvoiceStatus @default(PENDING)
+  pagbankOrderId  String?                         // PagBank order/charge id
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+
+  @@index([workspaceId])
+  @@index([subscriptionId])
+}
+
+// ────────────────────────────────────────────────────────────
+//  API keys — for the MCP server / CLI (nous-context)
+// ────────────────────────────────────────────────────────────
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String                                  // "local-cli", "ci", ...
+  prefix      String                                  // first 8 chars shown to user
+  hash        String    @unique                       // sha256 of full key
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  revokedAt   DateTime?
+
+  @@index([workspaceId])
+  @@index([hash])
+}
+
+// ────────────────────────────────────────────────────────────
+//  Audit
+// ────────────────────────────────────────────────────────────
+
+model AuditEvent {
+  id          String   @id @default(cuid())
+  workspaceId String?
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  actorId     String?
+  actor       User?      @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+  action      String                                  // "subscription.created", "apikey.issued"
+  meta        Json     @default("{}")
+  createdAt   DateTime @default(now())
+
+  @@index([workspaceId])
+  @@index([action])
+}
